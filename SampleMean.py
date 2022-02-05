@@ -40,7 +40,8 @@ if sys.version_info[0] < 3:
 # Histogram and histogram file initialization
 hmean = TH1D("hmean","hmean; Sample mean",250,-2.5,2.5)
 hsmean = TH1D("hsmean","hsmean; #sqrt{N} sample mean",300,-7.5,7.5)
-hvar = TH1D("hvar","hvar; Population variance estimate",300,0.0,6.0)
+hvar1 = TH1D("hvar1","hvar1; Population variance estimate I",300,0.0,6.0)
+hvar2 = TH1D("hvar2","hvar2; Population variance estimate II",300,0.0,6.0)
 hsd1 = TH1D("hsd1","hsd1; Population standard deviation estimate I",300,0.0,3.0)
 hsd2 = TH1D("hsd2","hsd2; Population standard deviation estimate II",300,0.0,3.0)
 hsem1 = TH1D("hsem1","hsem1; Sample mean error estimate I",200,0.0,1.0)
@@ -67,19 +68,23 @@ for i in range(Nexp):                     # Nexp repetitions
         xxsum += x**2
     xave  = xsum/N
     xxave = xxsum/N
-    var = (N/(N-1))*(xxave - xave**2)     # Variance estimate with the N/(N-1) bias correction.
-    sdnaive = math.sqrt(var)
+    var1 = xxave - xave**2                # Naive biased variance estimate.
+    var2 = (N/(N-1))*var1                 # Variance estimate with the N/(N-1) bias correction.
+
+    sdnaive = math.sqrt(var2)
     hmean.Fill(xave)                      # Sample mean
     hsmean.Fill(math.sqrt(N)*xave)        # Sample mean scaled by sqrt(N)
-    hvar.Fill(var)                        # Unbiased variance estimate
+    
+    hvar1.Fill(var1)                      # Variance estimate (biased)
     hsd1.Fill(sdnaive)                    # Standard deviation estimate (biased)
     hsem1.Fill(sdnaive/math.sqrt(N))      # Standard error on the mean estimate (biased)
 
+    hvar2.Fill(var2)                      # Variance estimate (unbiased)
     sd = cN*sdnaive 
-    hsd2.Fill(sd)                         # With G-T correction
-    hsem2.Fill(sd/math.sqrt(N))           # With G-T correction
+    hsd2.Fill(sd)                         # With G-T correction (unbiased)
+    hsem2.Fill(sd/math.sqrt(N))           # With G-T correction (unbiased)
     
-histList = [ hmean, hsmean, hvar, hsd1, hsem1, hsd2, hsem2 ]
+histList = [ hmean, hsmean, hvar1, hsd1, hsem1, hvar2, hsd2, hsem2 ]
 for h in histList:
     histInfo(h)
 
