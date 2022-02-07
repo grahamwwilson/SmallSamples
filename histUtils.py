@@ -8,4 +8,4 @@ def histInfo(h):
     h.Print()
     print("Mean: ",h.GetMean()," +- ",h.GetMeanError())
     print("RMS : ",h.GetRMS() ," +- ",h.GetRMSError())
-    h.Write()      # Make sure it gets written to output file too
+#    h.Write()      # Make sure it gets written to output file too

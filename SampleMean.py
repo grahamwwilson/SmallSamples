@@ -25,6 +25,8 @@
 # Code uses python3 assumptions on integers and will only work correctly 
 # if invoked with python3. It throws an exception if called with python 2.
 #
+# Now also includes the t value for each N-element sample.
+#
 #                       Graham W. Wilson
 #                            05-FEB-2022
 #
@@ -32,22 +34,21 @@ import random
 import math
 from ROOT import TFile, TH1D, TMath
 from histUtils import histInfo
-import sys
+import myPythonCheck
 
-if sys.version_info[0] < 3:
-    raise Exception("Python 3 or a more recent version is required for proper execution")
+myPythonCheck.Check()                         # Enforce use of python3
 
 # Histogram and histogram file initialization
+f  = TFile("SmallSamples.root", "recreate")
 hmean = TH1D("hmean","hmean; Sample mean",250,-2.5,2.5)
-hsmean = TH1D("hsmean","hsmean; #sqrt{N} sample mean",300,-7.5,7.5)
+hsmean = TH1D("hsmean","hsmean; #sqrt{N} sample mean",400,-10.0,10.0)
 hvar1 = TH1D("hvar1","hvar1; Population variance estimate I",300,0.0,6.0)
 hvar2 = TH1D("hvar2","hvar2; Population variance estimate II",300,0.0,6.0)
 hsd1 = TH1D("hsd1","hsd1; Population standard deviation estimate I",300,0.0,3.0)
 hsd2 = TH1D("hsd2","hsd2; Population standard deviation estimate II",300,0.0,3.0)
 hsem1 = TH1D("hsem1","hsem1; Sample mean error estimate I",200,0.0,1.0)
 hsem2 = TH1D("hsem2","hsem2; Sample mean error estimate II",200,0.0,1.0)
-
-f  = TFile("SmallSamples.root", "recreate")
+ht = TH1D("ht","t distribution; Student's t",400,-10.0,10.0)
 
 Nexp = 1000000
 N = 10
@@ -59,32 +60,35 @@ print("Gurland and Tripathi exact correction for N =",N,":",cN)
 
 # Exact method
 random.seed(200)
-for i in range(Nexp):                     # Nexp repetitions
+for i in range(Nexp):                        # Nexp repetitions
     xsum = 0.0
     xxsum = 0.0
-    for j in range(N):                    # Small sample of N from standardized normal
+    for j in range(N):                       # Small sample of N from standardized normal
         x = random.gauss(0.0,1.0)
         xsum += x
         xxsum += x**2
     xave  = xsum/N
     xxave = xxsum/N
-    var1 = xxave - xave**2                # Naive biased variance estimate.
-    var2 = (N/(N-1))*var1                 # Variance estimate with the N/(N-1) bias correction.
+    var1 = xxave - xave**2                   # Naive biased variance estimate.
+    var2 = (N/(N-1))*var1                    # Variance estimate with the N/(N-1) bias correction.
 
     sdnaive = math.sqrt(var2)
-    hmean.Fill(xave)                      # Sample mean
-    hsmean.Fill(math.sqrt(N)*xave)        # Sample mean scaled by sqrt(N)
+    hmean.Fill(xave)                         # Sample mean
+    hsmean.Fill(math.sqrt(N)*xave)           # Sample mean scaled by sqrt(N)
     
-    hvar1.Fill(var1)                      # Variance estimate (biased)
-    hsd1.Fill(sdnaive)                    # Standard deviation estimate (biased)
-    hsem1.Fill(sdnaive/math.sqrt(N))      # Standard error on the mean estimate (biased)
+    hvar1.Fill(var1)                         # Variance estimate (biased)
+    hsd1.Fill(sdnaive)                       # Standard deviation estimate (biased)
+    hsem1.Fill(sdnaive/math.sqrt(N))         # Standard error on the mean estimate (biased)
 
-    hvar2.Fill(var2)                      # Variance estimate (unbiased)
+    hvar2.Fill(var2)                         # Variance estimate (unbiased)
     sd = cN*sdnaive 
-    hsd2.Fill(sd)                         # With G-T correction (unbiased)
-    hsem2.Fill(sd/math.sqrt(N))           # With G-T correction (unbiased)
+    hsd2.Fill(sd)                            # With G-T correction (unbiased)
+    hsem2.Fill(sd/math.sqrt(N))              # With G-T correction (unbiased)
     
-histList = [ hmean, hsmean, hvar1, hsd1, hsem1, hvar2, hsd2, hsem2 ]
+    t = (xave - 0.0)/(sdnaive/math.sqrt(N))  # Should be distributed as Student's t with N-1 d.o.f.
+    ht.Fill(t)
+
+histList = [ hmean, hsmean, hvar1, hsd1, hsem1, hvar2, hsd2, hsem2, ht ]
 for h in histList:
     histInfo(h)
 
