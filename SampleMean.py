@@ -48,6 +48,8 @@ hsd1 = TH1D("hsd1","hsd1; Population standard deviation estimate I",300,0.0,3.0)
 hsd2 = TH1D("hsd2","hsd2; Population standard deviation estimate II",300,0.0,3.0)
 hsem1 = TH1D("hsem1","hsem1; Sample mean error estimate I",200,0.0,1.0)
 hsem2 = TH1D("hsem2","hsem2; Sample mean error estimate II",200,0.0,1.0)
+hchisq = TH1D("hchisq","Chi-squared; Chi-squared with 10 d.o.f.",250,0.0,50.0)
+
 ht = TH1D("ht","t distribution; Student's t",400,-10.0,10.0)
 
 Nexp = 1000000
@@ -67,6 +69,7 @@ for i in range(Nexp):                        # Nexp repetitions
         x = random.gauss(0.0,1.0)
         xsum += x
         xxsum += x**2
+    hchisq.Fill(xxsum)                       # Should have chi-squared with N dof.
     xave  = xsum/N
     xxave = xxsum/N
     var1 = xxave - xave**2                   # Naive biased variance estimate.
@@ -88,7 +91,7 @@ for i in range(Nexp):                        # Nexp repetitions
     t = (xave - 0.0)/(sdnaive/math.sqrt(N))  # Should be distributed as Student's t with N-1 d.o.f.
     ht.Fill(t)
 
-histList = [ hmean, hsmean, hvar1, hsd1, hsem1, hvar2, hsd2, hsem2, ht ]
+histList = [ hmean, hsmean, hvar1, hsd1, hsem1, hvar2, hsd2, hsem2, ht, hchisq ]
 for h in histList:
     histInfo(h)
 
