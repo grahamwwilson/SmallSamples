@@ -60,7 +60,6 @@ N = 10
 cN = math.sqrt((N-1)/2) * TMath.Gamma((N-1)/2)/ TMath.Gamma(N/2)
 print("Gurland and Tripathi exact correction for N =",N,":",cN)
 
-# Exact method
 random.seed(200)
 for i in range(Nexp):                        # Nexp repetitions
     xsum = 0.0
