@@ -57,7 +57,7 @@ N = 10
 
 # Implement corrective constant a la Gurland and Tripathi equation 2
 # to make standard deviation estimate unbiased (assumes normal).
-cN = math.sqrt((N-1)/2) * TMath.Gamma((N-1)/2)/ TMath.Gamma(N/2)
+cN = math.sqrt((N-1)/2) * TMath.Gamma((N-1)/2) / TMath.Gamma(N/2)
 print("Gurland and Tripathi exact correction for N =",N,":",cN)
 
 random.seed(200)
