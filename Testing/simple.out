@@ -17,7 +17,7 @@ Exact version of Students t-test:  Ttest_indResult(statistic=-6.437237145420365,
 Exact version of Welchs t-test  :  Ttest_indResult(statistic=-6.247236632247212, pvalue=3.57227911407478e-05)
 Exact version of Mann-Whitney U-test:   MannwhitneyuResult(statistic=2.0, pvalue=4.763038818766373e-05)
 mean(x) - mean(y)  T1Obs: -3.0636262626262627
- med(x) -  med(y)  T2Obs: -3.2859999999999996
- Welch t           T3Obs: -6.247236632247213
+med(x)  -  med(y)  T2Obs: -3.2859999999999996
+Welch t            T3Obs: -6.247236632247213
 nx,ny,spB,Student t1: 9 11 1.0588608097223549 -6.437237145420366
 nx,ny,sDelta,Welch t2: 9 11 0.4903970255924556 -6.247236632247213
